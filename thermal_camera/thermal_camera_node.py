@@ -44,12 +44,7 @@ class ThermalCameraNode(Node):
         # Camera initialization
         self.cap = cv2.VideoCapture(f'/dev/video{self.device}', cv2.CAP_V4L2)
         
-        # Raspberry Pi detection
-        self.is_pi = self.check_raspberrypi()
-        if self.is_pi:
-            self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
-        else:
-            self.cap.set(cv2.CAP_PROP_CONVERT_RGB, False)
+        self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 
         # Camera parameters
         self.width = 256
@@ -59,13 +54,6 @@ class ThermalCameraNode(Node):
 
         # Create timer for camera processing
         self.timer = self.create_timer(0.1, self.process_frame)
-
-    def check_raspberrypi(self):
-        try:
-            with open('/sys/firmware/devicetree/base/model', 'r') as m:
-                return 'raspberry pi' in m.read().lower()
-        except Exception:
-            return False
 
     def process_frame(self):
         ret, frame = self.cap.read()
