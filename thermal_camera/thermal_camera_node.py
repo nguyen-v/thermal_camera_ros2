@@ -21,8 +21,9 @@ class ThermalCameraNode(Node):
         self.declare_parameter('colormap', 0)
         self.declare_parameter('blur_radius', 0)
         self.declare_parameter('threshold', 2)
-        # New orientation parameter (allowed values: 0, 90, 180, 270)
+        # Allowed values: 0, 90, 180, 270
         self.declare_parameter('orientation', 0)
+        self.declare_parameter('fps', 30)
 
         # Get parameter values
         self.hud = self.get_parameter('hud').value
@@ -35,6 +36,7 @@ class ThermalCameraNode(Node):
         self.rad = self.get_parameter('blur_radius').value
         self.threshold = self.get_parameter('threshold').value
         self.orientation = self.get_parameter('orientation').value
+        self.fps = self.get_parameter('fps').value
 
         # ROS Publishers
         self.raw_pub = self.create_publisher(Image, 'thermal_image/raw', 10)
@@ -43,7 +45,6 @@ class ThermalCameraNode(Node):
         
         # Camera initialization
         self.cap = cv2.VideoCapture(f'/dev/video{self.device}', cv2.CAP_V4L2)
-        
         self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 
         # Camera parameters
@@ -52,8 +53,8 @@ class ThermalCameraNode(Node):
         self.new_width = self.width * self.scale
         self.new_height = self.height * self.scale
 
-        # Create timer for camera processing
-        self.timer = self.create_timer(0.1, self.process_frame)
+        # Create timer for camera processing using fps parameter
+        self.timer = self.create_timer(1.0 / self.fps, self.process_frame)
 
     def process_frame(self):
         ret, frame = self.cap.read()
@@ -97,14 +98,12 @@ class ThermalCameraNode(Node):
 
         # Draw crosshair at the center of the final (rotated) image
         if self.crosshair:
-            # Draw white lines for high contrast crosshair
             cv2.line(rotated, (center_x, center_y - 20), (center_x, center_y + 20), (255,255,255), 2)
             cv2.line(rotated, (center_x - 20, center_y), (center_x + 20, center_y), (255,255,255), 2)
         
         # Draw temperature text above the crosshair (fixed offset)
         if self.show_temp:
             temp_text = f'{temp}C'
-            # You can adjust the offsets as needed
             text_offset_x = 10
             text_offset_y = 30
             cv2.putText(rotated, temp_text, (center_x + text_offset_x, center_y - text_offset_y), 
@@ -113,14 +112,14 @@ class ThermalCameraNode(Node):
         # Draw HUD at the top-left corner of the rotated image
         if self.hud:
             hud_bg_width = 160
-            hud_bg_height = 120
-            # Draw a filled rectangle for the HUD background
+            hud_bg_height = 150  # increased height to display FPS
             cv2.rectangle(rotated, (0, 0), (hud_bg_width, hud_bg_height), (0,0,0), -1)
             texts = [
                 f"Scale: {self.scale}",
                 f"Contrast: {self.alpha:.1f}",
                 f"Blur: {self.rad}",
-                f"Threshold: {self.threshold}C"
+                f"Threshold: {self.threshold}C",
+                f"FPS: {self.fps}"
             ]
             for i, text in enumerate(texts):
                 y = 20 + i * 30

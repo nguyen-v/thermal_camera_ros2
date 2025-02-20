@@ -58,6 +58,11 @@ def generate_launch_description():
             default_value='0',
             description='Image orientation (allowed values: 0, 90, 180, 270)'
         ),
+        DeclareLaunchArgument(
+            'fps',
+            default_value='30',
+            description='Camera framerate (max 30 FPS)'
+        ),
 
         # Node configuration with parameters set via LaunchConfiguration
         Node(
@@ -76,6 +81,7 @@ def generate_launch_description():
                 'blur_radius': LaunchConfiguration('blur_radius'),
                 'threshold': LaunchConfiguration('threshold'),
                 'orientation': LaunchConfiguration('orientation'),
+                'fps': LaunchConfiguration('fps'),
             }]
         )
     ])
