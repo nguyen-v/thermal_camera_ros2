@@ -25,8 +25,8 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'device',
-            default_value='0',
-            description='Camera device number'
+            default_value='/dev/video0',
+            description='Camera device'
         ),
         DeclareLaunchArgument(
             'scale',

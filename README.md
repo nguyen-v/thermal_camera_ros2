@@ -45,14 +45,14 @@ Tested on a Raspberry Pi 5.
 ## Running the node with params
 
 ```bash
-ros2 run thermal_camera thermal_camera_node --ros-args -p hud:=True -p device:=9 -p orientation:=270
+ros2 run thermal_camera thermal_camera_node --ros-args -p hud:=True -p device:=/dev/video0 -p orientation:=270
 ```
 
 
 ## Running the node with params (launch file)
 
 ```bash
-ros2 launch thermal_camera thermal_camera_launch.py hud:=True device:=9 orientation:=270
+ros2 launch thermal_camera thermal_camera_launch.py hud:=True device:=/dev/video0 orientation:=270
 ```
 
 ## Credits
