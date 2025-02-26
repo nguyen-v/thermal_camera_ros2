@@ -15,7 +15,7 @@ class ThermalCameraNode(Node):
         self.declare_parameter('hud', True)
         self.declare_parameter('crosshair', True)
         self.declare_parameter('show_temp', True)
-        self.declare_parameter('device', 0)
+        self.declare_parameter('device', '/dev/video0')
         self.declare_parameter('scale', 3)
         self.declare_parameter('alpha', 1.0)  # Contrast
         self.declare_parameter('colormap', 0)
@@ -44,7 +44,7 @@ class ThermalCameraNode(Node):
         self.bridge = CvBridge()
         
         # Camera initialization
-        self.cap = cv2.VideoCapture(f'/dev/video{self.device}', cv2.CAP_V4L2)
+        self.cap = cv2.VideoCapture(self.device, cv2.CAP_V4L2)
         self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)
 
         # Camera parameters
